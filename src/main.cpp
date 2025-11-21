@@ -7,7 +7,7 @@
 #include "secrets.h" // WiFi credentials and optional static IP configuration
 
 // ------------ CONFIG ZONE ------------
-const char* ZONE_ID  = "R45N4";   // <--- Change this value
+const char* ZONE_ID  = "R149E";   // <--- Change this value
 const char* URL_BASE = "http://aero.ratelet.fr/azba/azba.php";
 
 // ------------ CONFIG LEDS ------------
