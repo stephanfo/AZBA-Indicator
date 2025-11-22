@@ -9,6 +9,7 @@ A 3D-printable WiFi-connected LED indicator display for real-time monitoring of 
 ![Front View](cad/images/Front%20Green.jpeg)
 ![3D Model](cad/images/3D%20Screenshot.png)
 ![Back View](cad/images/Back.jpeg)
+![Inside View](cad/images/Inside.jpeg)
 
 </div>
 

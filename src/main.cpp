@@ -42,7 +42,7 @@ unsigned long lastFetchMs = 0;   // timestamp of last fetch (millis())
 unsigned long startupTimeMs = 0; // application startup timestamp
 // Number of refresh cycles performed (incremented before each fetch)
 // This counter is sent to the server for diagnostics (`refresh_count`)
-unsigned long refreshCount = 0; // number of refreshes (5-minute cycles)
+unsigned long refreshCount = 1; // number of refreshes (5-minute cycles)
 // Diagnostics counters
 unsigned long totalAttempts = 0;          // total HTTP attempts across retries
 unsigned long totalSuccessfulFetches = 0; // total successful fetches
