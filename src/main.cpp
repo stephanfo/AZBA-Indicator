@@ -230,6 +230,7 @@ void fetchStatus() {
             Serial.println(F("'"));
             currentMode = MODE_INACTIVE;
             success = true;
+            refreshCount++; // Zone not found still counts as a valid refresh cycle
             break;
           }
 
@@ -253,9 +254,9 @@ void fetchStatus() {
             currentMode = MODE_INACTIVE;
           }
 
-          // Mark success: update counters and refresh counter semantics
+          // Mark success: update counters
           success = true;
-          refreshCount++; // now counts successful refreshes (we increment after success)
+          refreshCount++; // Increment after successfully parsing the zone data
           totalSuccessfulFetches++;
           consecutiveFailures = 0;
           Serial.printf("Fetch successful (total successful: %lu)\n", totalSuccessfulFetches);
