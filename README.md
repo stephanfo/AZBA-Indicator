@@ -40,6 +40,7 @@ A 3D-printable WiFi-connected LED indicator display for real-time monitoring of 
 
 - **PlatformIO** (recommended) or Arduino IDE
 - **Python 3** (optional - for generating secrets from environment variables)
+- **PHP 8.0+** with cURL (for the `php/azba.php` backend and its tests; no Composer needed)
 - **Dependencies** (auto-installed by PlatformIO):
   - Adafruit NeoPixel library
   - ArduinoJson library
@@ -146,19 +147,96 @@ Edit the constants in `src/main.cpp`:
 
 ## API Data Source
 
-The device fetches AZBA data from:
+The device does **not** talk to the SIA directly. It calls a small PHP backend
+(`php/azba.php`) that you host on your own server or public endpoint; the
+firmware fetches `azba.php?azba=<ZONE_ID>` and reads three booleans per zone
+(`is_active_now`, `will_be_active`, `will_be_active_soon`).
 
-```
-http://www.sia.aviation-civile.gouv.fr/schedules
+The backend is split into two files along a clean reuse boundary:
+
+- **`php/azba_lib.php`** — a self-contained, reusable SIA client. It queries the
+  **official SIA JSON API** (the same backend the "AZBA2" web app at
+  `https://www.sia.aviation-civile.gouv.fr/azbaEx/` uses), decodes it, and
+  validates it (fail-safe guards). It returns the **raw extracted data only** —
+  the validity interval and each zone's activation time slots:
+  - `…/api/v3/custom/currentDate` — the current validity window
+  - `…/api/v3/r_t_b_as?…` — the list of active zones with their UTC time slots
+- **`php/azba.php`** — the project-specific request handler. It holds this
+  product's application logic: the activity flags (`is_active_now` /
+  `will_be_active` / `will_be_active_soon`, with the +5 min anticipation and the
+  4-hour window), the `?azba=<ZONE_ID>` filter, the metadata counters, and the
+  JSON output contract the firmware expects.
+
+> Historically `azba.php` scraped the HTML of `/schedules`. That page is now a
+> JavaScript single-page app with no parseable text, so the scraper broke. The
+> backend was rewritten to use the structured JSON API above, which is far more
+> robust to wording/markup changes. See [CHANGELOG.md](CHANGELOG.md).
+
+### Reusing the library in another project
+
+`php/azba_lib.php` has no dependencies (no Composer). Copy it in, `require` it,
+and call `azba_fetch()` to get the raw SIA data; then apply whatever analysis and
+output format your project needs. You only write your own handler — never the
+SIA querying/extraction.
+
+```php
+require 'azba_lib.php';
+
+try {
+    $sia = azba_fetch();
+    // $sia = [
+    //   'interval' => ['start_utc' => '...Z', 'end_utc' => '...Z'],
+    //   'zones'    => [ 'R45S3' => ['activations' => [
+    //       ['date' => 'YYYY-MM-DD', 'start_utc' => '...Z', 'end_utc' => '...Z'], ...
+    //   ]], ... ],   // only zones active in the current window are present
+    // ];
+
+    // ...your project's logic: decide what "active/soon" means, format, etc.
+    echo json_encode($sia);
+} catch (AzbaFetchException $e) {  // SIA unreachable / auth rejected (HTTP code in getCode())
+    // handle network failure
+} catch (AzbaDataException $e) {   // SIA responded but the data can't be trusted
+    // handle contract change — fail visibly, never assume "inactive"
+}
 ```
 
-Parsed via the local PHP backend (`php/azba.php`), which you can host on your own server or public endpoint.
+See `php/azba.php` for a complete handler that turns this raw data into the
+firmware's activity flags + JSON. Its `azba_compute_flags()` / `azba_filter_zone()`
+/ `azba_build_metadata()` are examples of the per-project layer you would adapt.
+
+To override the API base or shared secret (e.g. after a SIA rotation) without
+editing the file, `define('AZBA_API_BASE', …)` / `define('AZBA_SHARE_SECRET', …)`
+before the `require`, or pass `apiBase` / `shareSecret` in the `azba_fetch()`
+options array.
+
+### Fail-safe design (important)
+
+A *false "inactive"* is dangerous — it could imply a restricted low-altitude
+military zone is clear when it is actually active. So `azba.php` **never returns
+a "200 OK" it is not confident in**: on any doubt (auth rejected, unexpected
+response shape, stale validity window, unparsable times) it returns an HTTP
+error, which the firmware shows as the **white ERROR LED** (a visible fault)
+rather than silently signalling "clear" (green).
+
+### Backend maintenance & tests
+
+The data-integrity guards and the time logic are unit-tested. From the repo root:
+
+```bash
+php tests/run.php              # offline, deterministic unit tests
+AZBA_LIVE=1 php tests/run.php  # also checks the live SIA API contract
+```
+
+If the SIA rotates its API again, the live test fails fast and the header of
+`php/azba_lib.php` documents how to re-extract the API base / shared secret from
+the web app bundle.
 
 ## Project Structure
 
 ```
 .
 ├── README.md                      # This file
+├── CHANGELOG.md                   # Notable changes per version
 ├── platformio.ini                 # PlatformIO configuration
 ├── src/
 │   ├── main.cpp                   # Main firmware code
@@ -167,7 +245,11 @@ Parsed via the local PHP backend (`php/azba.php`), which you can host on your ow
 ├── extra/
 │   └── generate_secrets.py        # Script to auto-generate secrets.h from env vars
 ├── php/
-│   └── azba.php                   # PHP backend to parse and serve AZBA data (optional)
+│   ├── azba.php                   # Example request handler (reads ?azba=, outputs JSON)
+│   └── azba_lib.php               # Self-contained, reusable SIA client (azba_fetch)
+├── tests/
+│   ├── run.php                    # Zero-dependency test runner (php tests/run.php)
+│   └── fixtures/                  # Captured SIA API responses for offline tests
 ├── cad/
 │   ├── fusion360/                 # 3D CAD files (Fusion 360 project)
 │   ├── step/                      # STEP format 3D models
@@ -209,7 +291,12 @@ The 3D printable enclosure is available on Printables:
 1. Check internet connection: Open serial monitor and look for HTTP errors
 2. Verify `ZONE_ID` is valid
 3. Ensure backend URL (`URL_BASE`) is accessible
-4. Check if SIA website structure has changed (might require `php/azba.php` update)
+4. If the LED is **white (error)**, the backend returned a non-200 — this is the
+   intended fail-safe (never a false "inactive"). Hit `azba.php` directly in a
+   browser to read the JSON `error` message.
+5. Run `AZBA_LIVE=1 php tests/run.php` on the server: if the live test fails, the
+   SIA API contract changed and `php/azba.php` needs updating (the file header
+   documents how to re-extract the API base / shared secret).
 
 ### Device reboots frequently
 

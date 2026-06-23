@@ -1,0 +1,276 @@
+[
+    {
+        "id": 2086,
+        "name": "45 B",
+        "codeId": "LFR45B",
+        "codeType": "R",
+        "initialCodeType": "R",
+        "valDistVerUpper": 800,
+        "uomDistVerUpper": "FT",
+        "valDistVerLower": 0,
+        "uomDistVerLower": "FT",
+        "codeDistVerUpper": "HEI",
+        "codeDistVerLower": "HEI",
+        "txtRmk": "Administrator : CDPGE Athis-Mons.#Avoidance mandatory during activation hours.#\nActivation timetable available on :#\n- Internet :#\nhttps://www.sia.aviation-civile.gouv.fr#\n(section Preflight briefing/AZBA charts),#\nSOFIA Briefing#\nhttps://sofia-briefing.aviation-civile.gouv.fr#\n(AZBA charts section).#\nActual activity provided by :#- BASEL FIS#\n- SEINE FIS#\n- AVORD, AUXERRE, SAINT-YAN and DOLE AD.",
+        "coordinates": [
+            {
+                "id": 14529,
+                "coordPosition": 0,
+                "latitude": "471244.00N",
+                "longitude": "0042110.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14530,
+                "coordPosition": 1,
+                "latitude": "470811.00N",
+                "longitude": "0044105.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14531,
+                "coordPosition": 2,
+                "latitude": "464855.00N",
+                "longitude": "0044150.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14532,
+                "coordPosition": 3,
+                "latitude": "464507.00N",
+                "longitude": "0043144.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14533,
+                "coordPosition": 4,
+                "latitude": "470047.00N",
+                "longitude": "0041642.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14534,
+                "coordPosition": 5,
+                "latitude": "470438.00N",
+                "longitude": "0034000.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14535,
+                "coordPosition": 6,
+                "latitude": "472159.00N",
+                "longitude": "0033610.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14536,
+                "coordPosition": 7,
+                "latitude": "472917.00N",
+                "longitude": "0035943.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14537,
+                "coordPosition": 8,
+                "latitude": "472307.00N",
+                "longitude": "0040548.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14538,
+                "coordPosition": 9,
+                "latitude": "472127.00N",
+                "longitude": "0041449.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14539,
+                "coordPosition": 10,
+                "latitude": "471150.00N",
+                "longitude": "0041059.00E",
+                "codeType": "GRC"
+            }
+        ],
+        "timeSlots": [
+            {
+                "startTime": "2026-06-23T08:00:00+00:00",
+                "endTime": "2026-06-23T10:00:00+00:00"
+            },
+            {
+                "startTime": "2026-06-23T11:30:00+00:00",
+                "endTime": "2026-06-23T12:30:00+00:00"
+            }
+        ]
+    },
+    {
+        "id": 2143,
+        "name": "45 S3",
+        "codeId": "LFR45S3",
+        "codeType": "R",
+        "initialCodeType": "R",
+        "valDistVerUpper": 65,
+        "uomDistVerUpper": "FL",
+        "valDistVerLower": 800,
+        "uomDistVerLower": "FT",
+        "codeDistVerUpper": "STD",
+        "codeDistVerLower": "HEI",
+        "txtRmk": "Administrator : CDPGE Athis-Mons.#Avoidance mandatory during activation hours.#\nActivation timetable available on :#\n- Internet :#\nhttps://www.sia.aviation-civile.gouv.fr#\n(section Preflight briefing/AZBA charts),#\nSOFIA Briefing#\nhttps://sofia-briefing.aviation-civile.gouv.fr#\n(AZBA charts section).#\nActual activity provided by :#- BASEL FIS#\n- AUXERRE, SAINT-YAN and AVORD AD.",
+        "coordinates": [
+            {
+                "id": 14920,
+                "coordPosition": 0,
+                "latitude": "471244.00N",
+                "longitude": "0042110.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14921,
+                "coordPosition": 1,
+                "latitude": "470811.00N",
+                "longitude": "0044105.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14922,
+                "coordPosition": 2,
+                "latitude": "464855.00N",
+                "longitude": "0044150.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14923,
+                "coordPosition": 3,
+                "latitude": "464507.00N",
+                "longitude": "0043144.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14924,
+                "coordPosition": 4,
+                "latitude": "470047.00N",
+                "longitude": "0041642.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14925,
+                "coordPosition": 5,
+                "latitude": "470438.00N",
+                "longitude": "0034000.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14926,
+                "coordPosition": 6,
+                "latitude": "472159.00N",
+                "longitude": "0033610.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14927,
+                "coordPosition": 7,
+                "latitude": "472917.00N",
+                "longitude": "0035943.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14928,
+                "coordPosition": 8,
+                "latitude": "472307.00N",
+                "longitude": "0040548.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14929,
+                "coordPosition": 9,
+                "latitude": "472127.00N",
+                "longitude": "0041449.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14930,
+                "coordPosition": 10,
+                "latitude": "471150.00N",
+                "longitude": "0041059.00E",
+                "codeType": "GRC"
+            }
+        ],
+        "timeSlots": [
+            {
+                "startTime": "2026-06-23T07:30:00+00:00",
+                "endTime": "2026-06-23T10:00:00+00:00"
+            },
+            {
+                "startTime": "2026-06-23T11:30:00+00:00",
+                "endTime": "2026-06-23T13:30:00+00:00"
+            }
+        ]
+    },
+    {
+        "id": 2141,
+        "name": "45 S4",
+        "codeId": "LFR45S4",
+        "codeType": "R",
+        "initialCodeType": "R",
+        "valDistVerUpper": 65,
+        "uomDistVerUpper": "FL",
+        "valDistVerLower": 800,
+        "uomDistVerLower": "FT",
+        "codeDistVerUpper": "STD",
+        "codeDistVerLower": "HEI",
+        "txtRmk": "Administrator : CDPGE Athis-Mons.#Avoidance mandatory during activation hours.#\nActivation timetable available on :#\n- Internet :#\nhttps://www.sia.aviation-civile.gouv.fr#\n(section Preflight briefing/AZBA charts),#\nSOFIA Briefing#\nhttps://sofia-briefing.aviation-civile.gouv.fr#\n(AZBA charts section).#\nActual activity provided by :#- BASEL FIS#\n- SAINT-YAN, LYON SAINT-EXUPERY, DOLE and LUXEUIL AD.",
+        "coordinates": [
+            {
+                "id": 14906,
+                "coordPosition": 0,
+                "latitude": "462410.00N",
+                "longitude": "0044905.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14907,
+                "coordPosition": 1,
+                "latitude": "463355.00N",
+                "longitude": "0045038.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14908,
+                "coordPosition": 2,
+                "latitude": "464855.00N",
+                "longitude": "0044150.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14909,
+                "coordPosition": 3,
+                "latitude": "464507.00N",
+                "longitude": "0043144.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14910,
+                "coordPosition": 4,
+                "latitude": "463400.00N",
+                "longitude": "0043920.00E",
+                "codeType": "GRC"
+            },
+            {
+                "id": 14911,
+                "coordPosition": 5,
+                "latitude": "462410.00N",
+                "longitude": "0044254.00E",
+                "codeType": "RHL"
+            }
+        ],
+        "timeSlots": [
+            {
+                "startTime": "2026-06-23T07:30:00+00:00",
+                "endTime": "2026-06-23T10:00:00+00:00"
+            },
+            {
+                "startTime": "2026-06-23T11:30:00+00:00",
+                "endTime": "2026-06-23T13:30:00+00:00"
+            }
+        ]
+    }
+]
