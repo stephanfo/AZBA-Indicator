@@ -15,15 +15,15 @@ A 3D-printable WiFi-connected LED indicator display for real-time monitoring of 
 
 ## Features
 
-- 🟢 **Real-time AZBA Status Display** — Shows if your configured airspace zone is currently active
-- 🟡 **Upcoming Activity Alerts** — Visual indication if the zone will be active within 4 hours
-- 🔴 **LED Status Indicators**
-  - Blue: WiFi connecting
-  - White: Error or startup
-  - Red (blinking): Zone active now
-  - Orange (blinking): Zone will be active soon (within 4 hours)
-  - Yellow (solid): Zone will be active later
-  - Green (solid): Zone inactive
+- **Real-time AZBA Status Display** — Shows if your configured airspace zone is currently active
+- **Upcoming Activity Alerts** — Visual indication if the zone will be active within 4 hours
+- **LED Status Indicators**
+  - 🟢 Green (solid): Zone inactive and not planned to be active
+  - 🟡 Yellow (solid): Zone will be active in the future
+  - 🟠 Orange (blinking): Zone will be active soon (within 4 hours)
+  - 🔴 Red (blinking): Zone active now
+  - 🔵 Blue: WiFi connecting
+  - ⚪ White: Error or startup
 - 🔄 **Automatic Refresh** — Fetches AZBA data every 5 minutes
 - 🔁 **Auto-Reboot** — Automatically reboots every 48 hours to prevent memory drift
 - 🛡️ **WiFi Resilience** — Automatic retry logic (3 retries with 25-second intervals)
@@ -33,13 +33,13 @@ A 3D-printable WiFi-connected LED indicator display for real-time monitoring of 
 
 - **Microcontroller:** Wemos D1 Mini Lite (ESP8266)
 - **LEDs:** 6× WS2812B (NeoPixel) addressable RGB LEDs
-- **Power Supply:** 5V microUSB (for Wemos) + 5V dedicated (for LEDs if needed)
+- **Power Supply:** 5V/1A jack
 - **3D Enclosure:** See [Printables model](https://www.printables.com/model/1487021-azba-status-indicator-3d-printable-display-for-des)
 
 ## Software Requirements
 
 - **PlatformIO** (recommended) or Arduino IDE
-- **Python 3** (for generating secrets from environment variables)
+- **Python 3** (optional - for generating secrets from environment variables)
 - **Dependencies** (auto-installed by PlatformIO):
   - Adafruit NeoPixel library
   - ArduinoJson library
@@ -49,7 +49,7 @@ A 3D-printable WiFi-connected LED indicator display for real-time monitoring of 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/AZBA-Indicator.git
+git clone https://github.com/stephanfo/AZBA-Indicator.git
 cd AZBA-Indicator
 ```
 
@@ -80,7 +80,7 @@ export PASSWORD="Your-WiFi-Password"
 Edit `src/main.cpp` and change the `ZONE_ID` to your desired zone:
 
 ```cpp
-const char* ZONE_ID  = "R45N4";   // Change to your zone (e.g., R45S3, R142A)
+const char* ZONE_ID  = "R149E";   // Change to your zone (e.g., R45S3, R142A)
 ```
 
 Available zones: R45S3, R142A, R45N5.1, R45N4, etc. (see AZBA documentation)
@@ -137,12 +137,12 @@ Edit the constants in `src/main.cpp`:
 
 | Mode | LED Color | Behavior | Meaning |
 |------|-----------|----------|---------|
+| `MODE_INACTIVE` | Green | Solid | Zone is inactive |
+| `MODE_WILL_BE_ACTIVE_LATER` | Yellow | Solid | Zone will be active, but beyond 4 hours |
+| `MODE_WILL_BE_ACTIVE_SOON` | Orange | Blinking | Zone will be active within 4 hours |
+| `MODE_ACTIVE_NOW` | Red | Blinking | Zone is active right now |
 | `MODE_CONNECTING` | Blue | Solid | WiFi is connecting |
 | `MODE_ERROR_OR_STARTUP` | White | Solid | Startup or error condition |
-| `MODE_ACTIVE_NOW` | Red | Blinking | Zone is active right now |
-| `MODE_WILL_BE_ACTIVE_SOON` | Orange | Blinking | Zone will be active within 4 hours |
-| `MODE_WILL_BE_ACTIVE_LATER` | Yellow | Solid | Zone will be active, but beyond 4 hours |
-| `MODE_INACTIVE` | Green | Solid | Zone is inactive |
 
 ## API Data Source
 
@@ -194,7 +194,7 @@ The 3D printable enclosure is available on Printables:
 
 1. Check credentials in `src/secrets.h`
 2. Verify SSID is not hidden
-3. Ensure WiFi signal is strong
+3. Ensure WiFi signal is strong and 2.4GHz available
 4. Check serial output for error messages: `platformio device monitor --baud 115200`
 
 ### LEDs not lighting up
@@ -214,7 +214,7 @@ The 3D printable enclosure is available on Printables:
 ### Device reboots frequently
 
 1. Check power supply stability (use good quality PSU)
-2. Verify antenna position on Wemos D1 Mini (avoid metal surfaces)
+2. Verify antenna position on Wemos D1 Mini (avoid metal surfaces around)
 3. Increase `REBOOT_INTERVAL_MS` if reboots are too frequent
 
 ## Contributing
@@ -235,7 +235,7 @@ This project is licensed under the MIT License — see LICENSE file for details.
 
 ## Support & Feedback
 
-- **Issues:** [GitHub Issues](https://github.com/YOUR_USERNAME/AZBA-Indicator/issues)
+- **Issues:** [GitHub Issues](https://github.com/stephanfo/AZBA-Indicator/issues)
 - **Printables Model Comments:** [Printables Discussion](https://www.printables.com/model/1487021-azba-status-indicator-3d-printable-display-for-des)
 
 ## Acknowledgments
@@ -245,8 +245,3 @@ This project is licensed under the MIT License — see LICENSE file for details.
 - [PlatformIO](https://platformio.org/)
 - SIA (Service de l'Information Aéronautique) for AZBA data
 - Printables community for hardware feedback
-
----
-
-**Last Updated:** November 2025
-git init

@@ -17,4 +17,10 @@ const char* password = "YOUR_PASSWORD";
 // IPAddress dns1(8, 8, 8, 8);
 // IPAddress dns2(8, 8, 4, 4);
 
+// ========== AZBA Indicator Config ==========
+// AZBA zone identifier to monitor
+const char* ZONE_ID  = "R149E";   // <--- Adjust to your zone
+// Base URL of the AZBA server
+const char* URL_BASE = "http://your.website.fr/folder/azba.php";
+
 #endif // SECRETS_EXAMPLE_H
