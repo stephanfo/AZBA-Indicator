@@ -1,0 +1,114 @@
+name: Firmware & site
+
+# Builds the firmware, runs the tests, and publishes the presentation page with
+# the web installer on GitHub Pages (https://azba.ratelet.fr).
+#
+# Assembly is not rewritten here: the job calls site/build.sh, the same script
+# used locally, so "it works on my machine" holds in CI too.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'lib/**'
+      - 'test/**'
+      - 'tests/**'
+      - 'php/**'
+      - 'extra/**'
+      - 'site/**'
+      - 'platformio.ini'
+      - 'LICENSE'
+      - '.github/workflows/pages.yml'
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'lib/**'
+      - 'test/**'
+      - 'tests/**'
+      - 'php/**'
+      - 'extra/**'
+      - 'site/**'
+      - 'platformio.ini'
+      - 'LICENSE'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  # One group per ref: a single global group would let one PR's run evict
+  # another's. Deployments only start from main, so they stay serialized.
+  group: pages-${{ github.ref }}
+  # Cancelling a Pages deployment in flight can leave the site inconsistent.
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Cache PlatformIO
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.platformio
+          key: pio-${{ runner.os }}-${{ hashFiles('platformio.ini') }}
+
+      - name: Install PlatformIO
+        run: pip install --upgrade platformio
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          # npm only lives under site/ (it provides ESP Web Tools).
+          cache-dependency-path: site/package-lock.json
+
+      - run: npm ci
+        working-directory: site
+
+      # Zone/URL rules of the setup portal (lib/AzbaConfig), on the host.
+      - name: Firmware unit tests
+        run: pio test -e native
+
+      # Fail-safe guards and time logic of the backend (PHP ships with the runner).
+      - name: Backend tests
+        run: php tests/run.php
+
+      # Builds the firmware, assembles _site/ and checks it; fails if anything is missing.
+      - name: Assemble the site
+        run: ./site/build.sh
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    # Pull requests build and test without publishing.
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+
+    # Write permissions belong to this job only: `build` also runs on PRs from forks.
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,9 @@
+{
+    "name": "azba-indicator-site",
+    "private": true,
+    "license": "MIT",
+    "//": "npm n'existe que pour ce dossier : il fournit ESP Web Tools (l'installateur dans le navigateur), copié tel quel dans le site par site/build.sh. Rien n'est construit ici.",
+    "devDependencies": {
+        "esp-web-tools": "10.4.0"
+    }
+}

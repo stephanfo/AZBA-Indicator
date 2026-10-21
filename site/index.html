@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AZBA Indicator — un voyant qui dit si la zone AZBA est active</title>
+  <meta name="description" content="Boîtier imprimé en 3D, carte ESP8266 et six LED : il consulte les créneaux AZBA publiés par le SIA et montre d'un coup d'œil si la zone est active. Installation depuis le navigateur, configuration par Wi-Fi, sans outil de développeur.">
+  <meta name="theme-color" content="#c2410c">
+  <meta name="author" content="Stéphane Ratelet">
+  <link rel="canonical" href="https://azba.ratelet.fr/">
+  <!-- Les métadonnées de partage exigent des URL absolues. Le domaine doit rester celui de
+       site/CNAME : site/build.sh vérifie que les deux concordent. -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:locale:alternate" content="en_GB">
+  <meta property="og:url" content="https://azba.ratelet.fr/">
+  <meta property="og:title" content="AZBA Indicator — la zone AZBA est-elle active ?">
+  <meta property="og:description" content="Un voyant imprimé en 3D pour le bureau du club : vert, jaune, orange ou rouge selon les créneaux AZBA du SIA. Libre, à monter soi-même pour une vingtaine d'euros.">
+  <meta property="og:image" content="https://azba.ratelet.fr/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Le boîtier AZBA Indicator allumé en vert, zone R149E.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/assets/fonts/geist-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/geist-sans-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/style.css">
+  <script>
+    // Avant le rendu : langue mémorisée, pour éviter un flash. Français par défaut,
+    // quel que soit le navigateur (et donc pour les moteurs).
+    try {
+      document.documentElement.lang = localStorage.getItem('lang') || 'fr';
+    } catch (e) {}
+  </script>
+  <!-- ESP Web Tools, servi depuis ce site (copié du paquet npm par site/build.sh) : aucune
+       requête vers un tiers. -->
+  <script type="module" src="/esp-web-tools/install-button.js"></script>
+  <script defer src="/app.js"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#contenu"><span lang="fr">Aller au contenu</span><span lang="en">Skip to content</span></a>
+
+<svg class="sprite" width="0" height="0" aria-hidden="true">
+  <symbol id="i-gh" viewBox="0 0 16 16"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></symbol>
+  <symbol id="i-out" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M6 3H3.5A1.5 1.5 0 0 0 2 4.5v8A1.5 1.5 0 0 0 3.5 14h8a1.5 1.5 0 0 0 1.5-1.5V10M9 2h5v5M14 2 7 9"/></symbol>
+  <symbol id="i-down" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M8 2v8.5M4.5 7 8 10.5 11.5 7M2.5 13.5h11"/></symbol>
+  <symbol id="i-usb" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M5.5 1.75h5v4.5h-5zM4 6.25h8v3.5a4 4 0 0 1-8 0zM8 13.75v1M7 3.5h0M9 3.5h0"/></symbol>
+</svg>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">AZ</span>AZBA Indicator</a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#couleurs"><span lang="fr">Couleurs</span><span lang="en">Colours</span></a>
+      <a href="#materiel"><span lang="fr">Matériel</span><span lang="en">Parts</span></a>
+      <a href="#installer"><span lang="fr">Installer</span><span lang="en">Install</span></a>
+      <a href="#serveur"><span lang="fr">Serveur</span><span lang="en">Server</span></a>
+      <a href="#configurer"><span lang="fr">Configurer</span><span lang="en">Set up</span></a>
+    </nav>
+    <div class="tools">
+      <button class="icon-button" id="lang-toggle" type="button">
+        <span lang="fr"><span aria-hidden="true">EN</span><span class="sr-only">Lire en anglais</span></span>
+        <span lang="en"><span aria-hidden="true">FR</span><span class="sr-only">Read in French</span></span>
+      </button>
+      <a class="icon-button" href="https://github.com/stephanfo/AZBA-Indicator"><svg aria-hidden="true"><use href="#i-gh"/></svg><span class="sr-only"><span lang="fr">Code source sur GitHub</span><span lang="en">Source code on GitHub</span></span></a>
+    </div>
+  </div>
+</header>
+
+<main id="contenu">
+
+  <!-- ══ Héros ══ -->
+  <section class="hero" id="top">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow"><span lang="fr">Pour le bureau du club ou le hangar</span><span lang="en">For the club office or the hangar</span></p>
+        <h1>
+          <span lang="fr">La zone AZBA est-elle active&nbsp;? <em>Un coup d'œil suffit.</em></span>
+          <span lang="en">Is the AZBA zone active? <em>One glance is enough.</em></span>
+        </h1>
+        <p class="lead">
+          <span lang="fr">Un boîtier imprimé en 3D, une petite carte Wi-Fi et six LED. Toutes les cinq minutes, il consulte les créneaux publiés par le SIA pour la zone de votre choix et prend la couleur de son état&nbsp;: active, bientôt active, prévue plus tard ou libre.</span>
+          <span lang="en">A 3D-printed case, a small Wi-Fi board and six LEDs. Every five minutes it checks the slots published by the SIA for the zone of your choice and takes the colour of its state: active, active soon, planned later or clear.</span>
+        </p>
+        <p class="lead">
+          <span lang="fr">Pas besoin d'être développeur&nbsp;: le logiciel s'installe depuis le navigateur, et le boîtier se règle depuis un téléphone.</span>
+          <span lang="en">No developer tools needed: the software installs from the browser, and the device is set up from a phone.</span>
+        </p>
+        <div class="links">
+          <a class="button button-primary" href="#installer"><svg aria-hidden="true"><use href="#i-usb"/></svg><span lang="fr">Installer le logiciel</span><span lang="en">Install the software</span></a>
+          <a class="button" href="https://www.printables.com/model/1487021-azba-status-indicator-3d-printable-display-for-des"><span lang="fr">Modèle 3D sur Printables</span><span lang="en">3D model on Printables</span><svg aria-hidden="true"><use href="#i-out"/></svg></a>
+        </div>
+        <p class="stack"><span class="stack-label"><span lang="fr">Sous le capot</span><span lang="en">Under the hood</span></span> ESP8266 · WS2812B · C++ · PHP · <span lang="fr">licence MIT</span><span lang="en">MIT licence</span></p>
+      </div>
+      <figure class="shot hero-shot">
+        <img src="/assets/img/azba-front.webp" width="1200" height="900" alt="Le boîtier AZBA Indicator allumé en vert : zone R149E inactive." data-alt-en="The AZBA Indicator device lit green: zone R149E inactive.">
+      </figure>
+    </div>
+  </section>
+
+  <!-- ══ Couleurs ══ -->
+  <section class="block" id="couleurs" aria-labelledby="h-couleurs">
+    <div class="wrap">
+      <header class="block-head">
+        <p class="eyebrow"><span class="num">01</span> <span lang="fr">Lire le voyant</span><span lang="en">Reading the light</span></p>
+        <h2 id="h-couleurs"><span lang="fr">Sept états, une seule question.</span><span lang="en">Seven states, one question.</span></h2>
+        <p><span lang="fr">Les AZBA sont les zones de vol à très basse altitude de la Défense. Leurs créneaux d'activation sont publiés chaque jour par le SIA&nbsp;; le boîtier les traduit en couleur pour la zone que vous avez choisie.</span><span lang="en">AZBA are the French military very-low-altitude flight zones. Their activation slots are published daily by the SIA; the device turns them into a colour for the zone you chose.</span></p>
+      </header>
+
+      <table class="table modes">
+        <thead>
+          <tr>
+            <th scope="col"><span lang="fr">Voyant</span><span lang="en">Light</span></th>
+            <th scope="col"><span lang="fr">Signification</span><span lang="en">Meaning</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="led led-red led-blink"></span><span lang="fr">Rouge clignotant</span><span lang="en">Blinking red</span></td>
+            <td><span lang="fr">La zone est active maintenant (ou le sera dans les cinq minutes).</span><span lang="en">The zone is active now (or will be within five minutes).</span></td>
+          </tr>
+          <tr>
+            <td><span class="led led-orange led-blink"></span><span lang="fr">Orange clignotant</span><span lang="en">Blinking orange</span></td>
+            <td><span lang="fr">Active dans moins de quatre heures.</span><span lang="en">Active within four hours.</span></td>
+          </tr>
+          <tr>
+            <td><span class="led led-yellow"></span><span lang="fr">Jaune fixe</span><span lang="en">Steady yellow</span></td>
+            <td><span lang="fr">Une activation est prévue, au-delà de quatre heures.</span><span lang="en">An activation is planned, more than four hours ahead.</span></td>
+          </tr>
+          <tr>
+            <td><span class="led led-green"></span><span lang="fr">Vert fixe</span><span lang="en">Steady green</span></td>
+            <td><span lang="fr">Aucune activation publiée pour cette zone sur la période connue.</span><span lang="en">No activation published for this zone in the known period.</span></td>
+          </tr>
+          <tr>
+            <td><span class="led led-white"></span><span lang="fr">Blanc fixe</span><span lang="en">Steady white</span></td>
+            <td><span lang="fr">Démarrage, ou <strong>pas d'information fiable</strong> (réseau, serveur, données du SIA douteuses). À ne jamais lire comme un feu vert.</span><span lang="en">Starting up, or <strong>no reliable information</strong> (network, server, doubtful SIA data). Never read it as a green light.</span></td>
+          </tr>
+          <tr>
+            <td><span class="led led-blue"></span><span lang="fr">Bleu fixe</span><span lang="en">Steady blue</span></td>
+            <td><span lang="fr">Connexion au Wi-Fi en cours.</span><span lang="en">Connecting to Wi-Fi.</span></td>
+          </tr>
+          <tr>
+            <td><span class="led led-purple led-blink-slow"></span><span lang="fr">Violet clignotant lent</span><span lang="en">Slow blinking purple</span></td>
+            <td><span lang="fr">Mode réglage&nbsp;: le boîtier attend sa configuration (voir plus bas).</span><span lang="en">Setup mode: the device is waiting for its settings (see below).</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <aside class="notice">
+        <p><strong><span lang="fr">Une aide visuelle, pas une source officielle.</span><span lang="en">A visual aid, not an official source.</span></strong>
+        <span lang="fr">Le voyant ne remplace pas la préparation du vol&nbsp;: consultez toujours les informations officielles du SIA avant de partir. Le logiciel est conçu pour préférer le blanc à un faux vert au moindre doute.</span><span lang="en">The light does not replace flight preparation: always check the official SIA information before you go. The software is designed to show white rather than a false green at the slightest doubt.</span></p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ══ Matériel ══ -->
+  <section class="block" id="materiel" aria-labelledby="h-materiel">
+    <div class="wrap">
+      <header class="block-head">
+        <p class="eyebrow"><span class="num">02</span> <span lang="fr">Matériel</span><span lang="en">Parts</span></p>
+        <h2 id="h-materiel"><span lang="fr">Une vingtaine d'euros de pièces.</span><span lang="en">About twenty euros of parts.</span></h2>
+        <p><span lang="fr">Prix indicatifs, hors frais de port, constatés sur les boutiques en ligne d'électronique&nbsp;; ils varient d'une boutique à l'autre.</span><span lang="en">Indicative prices, shipping excluded, as seen on online electronics shops; they vary from shop to shop.</span></p>
+      </header>
+
+      <div class="split">
+        <div>
+          <table class="table parts">
+            <thead>
+              <tr>
+                <th scope="col"><span lang="fr">Pièce</span><span lang="en">Part</span></th>
+                <th scope="col" class="right"><span lang="fr">Qté</span><span lang="en">Qty</span></th>
+                <th scope="col" class="right"><span lang="fr">Prix</span><span lang="en">Price</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span lang="fr">Carte Wemos D1 mini Lite (ESP8266)</span><span lang="en">Wemos D1 mini Lite board (ESP8266)</span></td>
+                <td class="right num">1</td><td class="right num">4 €</td>
+              </tr>
+              <tr>
+                <td><span lang="fr">Bande LED WS2812B 5&nbsp;V, 60&nbsp;LED/m&nbsp;: deux tronçons de 3&nbsp;LED</span><span lang="en">WS2812B 5&nbsp;V LED strip, 60&nbsp;LEDs/m: two pieces of 3&nbsp;LEDs</span></td>
+                <td class="right num">6</td><td class="right num">5 €</td>
+              </tr>
+              <tr>
+                <td><span lang="fr">Embase jack DC 5,5 × 2,1&nbsp;mm à visser</span><span lang="en">Panel-mount DC jack socket, 5.5 × 2.1&nbsp;mm</span></td>
+                <td class="right num">1</td><td class="right num">1 €</td>
+              </tr>
+              <tr>
+                <td><span lang="fr">Bloc secteur 5&nbsp;V 1&nbsp;A, fiche jack 5,5 × 2,1&nbsp;mm</span><span lang="en">5&nbsp;V 1&nbsp;A mains adapter, 5.5 × 2.1&nbsp;mm plug</span></td>
+                <td class="right num">1</td><td class="right num">7 €</td>
+              </tr>
+              <tr>
+                <td><span lang="fr">Vis M3 pour fermer le boîtier</span><span lang="en">M3 screws to close the case</span></td>
+                <td class="right num">4</td><td class="right num">1 €</td>
+              </tr>
+              <tr>
+                <td><span lang="fr">Fil souple fin, une trentaine de centimètres</span><span lang="en">Thin stranded wire, about 30&nbsp;cm</span></td>
+                <td class="right num">—</td><td class="right num">1 €</td>
+              </tr>
+              <tr>
+                <td><span lang="fr">Filament PLA ou PETG, environ 50&nbsp;g</span><span lang="en">PLA or PETG filament, about 50&nbsp;g</span></td>
+                <td class="right num">—</td><td class="right num">1,50 €</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <th scope="row" colspan="2"><span lang="fr">Total indicatif</span><span lang="en">Indicative total</span></th>
+                <td class="right num">≈ 20 €</td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <h3 class="sub"><span lang="fr">Outillage</span><span lang="en">Tools</span></h3>
+          <ul class="features">
+            <li><span lang="fr">Un fer à souder et de l'étain (six soudures sur les LED, trois sur la carte, deux sur le jack).</span><span lang="en">A soldering iron and solder (six joints on the LEDs, three on the board, two on the jack).</span></li>
+            <li><span lang="fr">Une imprimante 3D, ou celle d'un fablab ou d'un service d'impression.</span><span lang="en">A 3D printer, or one at a makerspace or a printing service.</span></li>
+            <li><span lang="fr">Un ordinateur avec Chrome ou Edge, et un câble USB qui transmet les données (pas un simple câble de charge).</span><span lang="en">A computer with Chrome or Edge, and a USB cable that carries data (not a charge-only cable).</span></li>
+          </ul>
+
+          <h3 class="sub"><span lang="fr">Câblage</span><span lang="en">Wiring</span></h3>
+          <ul class="features">
+            <li><span lang="fr">Jack <strong>+</strong> → broche <span class="num">5V</span> de la carte et <span class="num">+5V</span> des deux tronçons de LED.</span><span lang="en">Jack <strong>+</strong> → board <span class="num">5V</span> pin and <span class="num">+5V</span> of both LED pieces.</span></li>
+            <li><span lang="fr">Jack <strong>−</strong> → broche <span class="num">G</span> de la carte et <span class="num">GND</span> des LED.</span><span lang="en">Jack <strong>−</strong> → board <span class="num">G</span> pin and LED <span class="num">GND</span>.</span></li>
+            <li><span lang="fr">Broche <span class="num">D4</span> → <span class="num">DIN</span> du premier tronçon&nbsp;; <span class="num">DO</span> du premier → <span class="num">DIN</span> du second (suivre les flèches imprimées).</span><span lang="en">Pin <span class="num">D4</span> → <span class="num">DIN</span> of the first piece; <span class="num">DO</span> of the first → <span class="num">DIN</span> of the second (follow the printed arrows).</span></li>
+          </ul>
+          <p class="note"><span lang="fr">La façade porte le nom de la zone&nbsp;: adaptez-le dans le fichier Fusion&nbsp;360 du dépôt (dossier <code>cad/</code>) avant d'imprimer.</span><span lang="en">The front shows the zone name: change it in the repository's Fusion&nbsp;360 file (<code>cad/</code> folder) before printing.</span></p>
+        </div>
+
+        <figure class="shot">
+          <a class="shot-link" href="/assets/img/azba-inside.webp"><img src="/assets/img/azba-inside.webp" width="900" height="944" loading="lazy" alt="L'intérieur du boîtier : la carte D1 mini en haut, deux tronçons de trois LED au centre, reliés par des fils souples." data-alt-en="Inside the case: the D1 mini board at the top, two pieces of three LEDs in the middle, joined by thin wires."></a>
+          <figcaption><span lang="fr">L'intérieur&nbsp;: la carte et les deux tronçons de LED</span><span lang="en">Inside: the board and the two LED pieces</span></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ Installer ══ -->
+  <section class="block" id="installer" aria-labelledby="h-installer">
+    <div class="wrap">
+      <header class="block-head">
+        <p class="eyebrow"><span class="num">03</span> <span lang="fr">Installer le logiciel</span><span lang="en">Install the software</span></p>
+        <h2 id="h-installer"><span lang="fr">Depuis le navigateur, en deux minutes.</span><span lang="en">From the browser, in two minutes.</span></h2>
+        <p><span lang="fr">Rien à compiler ni à installer sur l'ordinateur&nbsp;: Chrome et Edge savent écrire le logiciel dans la carte par le câble USB.</span><span lang="en">Nothing to compile or install on the computer: Chrome and Edge can write the software to the board over the USB cable.</span></p>
+      </header>
+
+      <ol class="steps">
+        <li>
+          <h3><span lang="fr">Brancher la carte</span><span lang="en">Plug in the board</span></h3>
+          <p><span lang="fr">Reliez la carte D1 mini à l'ordinateur avec le câble USB. Le jack peut rester débranché.</span><span lang="en">Connect the D1 mini board to the computer with the USB cable. The jack can stay unplugged.</span></p>
+        </li>
+        <li>
+          <h3><span lang="fr">Cliquer sur « Installer »</span><span lang="en">Click “Install”</span></h3>
+          <p><span lang="fr">Choisissez le port qui apparaît (souvent «&nbsp;USB Serial&nbsp;» ou «&nbsp;CH340&nbsp;»), puis «&nbsp;Install AZBA Indicator&nbsp;». La fenêtre d'installation est en anglais.</span><span lang="en">Pick the port that appears (often “USB Serial” or “CH340”), then “Install AZBA Indicator”.</span></p>
+        </li>
+        <li>
+          <h3><span lang="fr">Effacer la première fois</span><span lang="en">Erase the first time</span></h3>
+          <p><span lang="fr">À la première installation, cochez «&nbsp;Erase device&nbsp;». Pour une mise à jour, ne cochez pas&nbsp;: le boîtier garde ses réglages.</span><span lang="en">On the first install, tick “Erase device”. For an update, leave it unticked: the device keeps its settings.</span></p>
+        </li>
+      </ol>
+
+      <div class="install">
+        <esp-web-install-button manifest="/firmware/manifest.json">
+          <button slot="activate" class="button button-primary button-large" type="button"><svg aria-hidden="true"><use href="#i-usb"/></svg><span lang="fr">Installer</span><span lang="en">Install</span></button>
+          <p slot="unsupported" class="notice"><span lang="fr">Ce navigateur ne permet pas l'installation. Ouvrez cette page avec <strong>Chrome</strong> ou <strong>Edge</strong> sur un ordinateur (pas sur téléphone).</span><span lang="en">This browser cannot install. Open this page with <strong>Chrome</strong> or <strong>Edge</strong> on a computer (not on a phone).</span></p>
+          <p slot="not-allowed" class="notice"><span lang="fr">L'installation exige une connexion sécurisée (https).</span><span lang="en">Installing requires a secure connection (https).</span></p>
+        </esp-web-install-button>
+        <p class="note">
+          <span lang="fr">Aucun port n'apparaît&nbsp;? Essayez un autre câble USB&nbsp;; sous Windows, installez le pilote CH340 proposé par la fenêtre d'installation. Version installée&nbsp;: </span><span lang="en">No port shows up? Try another USB cable; on Windows, install the CH340 driver offered by the install window. Version: </span><span class="num" id="fw-version">—</span>.
+          <span lang="fr">Pour les habitués d'esptool&nbsp;:</span><span lang="en">For esptool users:</span>
+          <a href="/firmware/firmware.bin" download><span lang="fr">firmware.bin</span><span lang="en">firmware.bin</span></a> <span lang="fr">(à écrire à l'adresse</span><span lang="en">(write at address</span> <span class="num">0x0</span>).
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ Serveur ══ -->
+  <section class="block" id="serveur" aria-labelledby="h-serveur">
+    <div class="wrap">
+      <header class="block-head">
+        <p class="eyebrow"><span class="num">04</span> <span lang="fr">Le petit serveur</span><span lang="en">The small server</span></p>
+        <h2 id="h-serveur"><span lang="fr">Deux fichiers PHP sur le site du club.</span><span lang="en">Two PHP files on the club's website.</span></h2>
+        <p><span lang="fr">Le boîtier n'interroge pas le SIA directement&nbsp;: il lit un petit fichier PHP que vous déposez sur votre hébergement web. Ce fichier traduit les créneaux du SIA en trois réponses simples. Un même serveur peut servir plusieurs boîtiers, et ceux d'autres clubs.</span><span lang="en">The device does not query the SIA directly: it reads a small PHP file that you upload to your web hosting. That file turns the SIA slots into three simple answers. One server can serve several devices, including other clubs' ones.</span></p>
+      </header>
+
+      <ol class="steps">
+        <li>
+          <h3><span lang="fr">Télécharger</span><span lang="en">Download</span></h3>
+          <p><span lang="fr">Récupérez <a href="/azba-serveur.zip" download>azba-serveur.zip</a>&nbsp;: il contient <code>azba.php</code> et <code>azba_lib.php</code>.</span><span lang="en">Get <a href="/azba-serveur.zip" download>azba-serveur.zip</a>: it holds <code>azba.php</code> and <code>azba_lib.php</code>.</span></p>
+        </li>
+        <li>
+          <h3><span lang="fr">Déposer</span><span lang="en">Upload</span></h3>
+          <p><span lang="fr">Envoyez les deux fichiers par FTP dans un même dossier, par exemple <code>azba/</code>. Il faut PHP&nbsp;8 avec l'extension cURL, ce qu'offrent les hébergements mutualisés courants.</span><span lang="en">Upload both files by FTP into the same folder, for instance <code>azba/</code>. It needs PHP&nbsp;8 with the cURL extension, which common shared hosting provides.</span></p>
+        </li>
+        <li>
+          <h3><span lang="fr">Vérifier</span><span lang="en">Check</span></h3>
+          <p><span lang="fr">Ouvrez <code>https://votre-site.fr/azba/azba.php?azba=R149E</code>&nbsp;: la page doit afficher un texte qui contient <code>metadata</code>. Notez cette adresse, sans ce qui suit le <code>?</code>&nbsp;: c'est elle que vous donnerez au boîtier.</span><span lang="en">Open <code>https://your-site.org/azba/azba.php?azba=R149E</code>: the page must show a text containing <code>metadata</code>. Write down that address, without what follows the <code>?</code>: you will give it to the device.</span></p>
+        </li>
+      </ol>
+      <p class="note"><span lang="fr">Si le SIA modifie son service, le serveur répond par une erreur et le boîtier passe au blanc plutôt que d'afficher un faux vert. Il suffit alors de remplacer les deux fichiers par leur dernière version, ici même.</span><span lang="en">If the SIA changes its service, the server answers with an error and the device turns white rather than showing a false green. Just replace both files with their latest version, right here.</span></p>
+    </div>
+  </section>
+
+  <!-- ══ Configurer ══ -->
+  <section class="block" id="configurer" aria-labelledby="h-configurer">
+    <div class="wrap">
+      <header class="block-head">
+        <p class="eyebrow"><span class="num">05</span> <span lang="fr">Configurer</span><span lang="en">Set up</span></p>
+        <h2 id="h-configurer"><span lang="fr">Le réglage se fait depuis un téléphone.</span><span lang="en">Setup is done from a phone.</span></h2>
+        <p><span lang="fr">Au premier démarrage, le boîtier crée son propre réseau Wi-Fi le temps que vous lui donniez trois informations&nbsp;: le Wi-Fi du club, la zone et l'adresse du serveur.</span><span lang="en">On first start, the device creates its own Wi-Fi network until you give it three pieces of information: the club's Wi-Fi, the zone and the server address.</span></p>
+      </header>
+
+      <ol class="steps">
+        <li>
+          <h3><span lang="fr">Alimenter le boîtier</span><span lang="en">Power the device</span></h3>
+          <p><span lang="fr">Les LED clignotent lentement en violet&nbsp;: le boîtier attend sa configuration.</span><span lang="en">The LEDs slowly blink purple: the device is waiting for its settings.</span></p>
+        </li>
+        <li>
+          <h3><span lang="fr">Rejoindre son Wi-Fi</span><span lang="en">Join its Wi-Fi</span></h3>
+          <p><span lang="fr">Sur le téléphone, connectez-vous au réseau <code>AZBA-Indicator-XXXX</code>. La page de réglage s'ouvre seule&nbsp;; sinon, ouvrez <code>http://192.168.4.1</code>.</span><span lang="en">On the phone, join the <code>AZBA-Indicator-XXXX</code> network. The setup page opens by itself; otherwise open <code>http://192.168.4.1</code>.</span></p>
+        </li>
+        <li>
+          <h3><span lang="fr">Remplir et enregistrer</span><span lang="en">Fill in and save</span></h3>
+          <p><span lang="fr">Touchez «&nbsp;Configure WiFi&nbsp;», choisissez le réseau du club (2,4&nbsp;GHz), son mot de passe, la zone (par exemple <code>R149E</code>) et l'adresse du serveur, puis «&nbsp;Save&nbsp;».</span><span lang="en">Tap “Configure WiFi”, pick the club's network (2.4&nbsp;GHz), its password, the zone (for instance <code>R149E</code>) and the server address, then “Save”.</span></p>
+        </li>
+        <li>
+          <h3><span lang="fr">C'est prêt</span><span lang="en">Done</span></h3>
+          <p><span lang="fr">Le boîtier redémarre, passe au bleu le temps de se connecter, puis prend la couleur de la zone.</span><span lang="en">The device restarts, turns blue while connecting, then takes the colour of the zone.</span></p>
+        </li>
+      </ol>
+
+      <dl class="facts">
+        <div>
+          <dt><span lang="fr">La zone</span><span lang="en">The zone</span></dt>
+          <dd><span lang="fr">Le code tel qu'il figure dans <a href="https://www.sia.aviation-civile.gouv.fr/azbaEx/">l'application AZBA du SIA</a>, sans le préfixe <code>LF</code>. Vérifiez-le&nbsp;: une zone mal saisie n'est jamais trouvée et resterait au vert.</span><span lang="en">The code as shown in <a href="https://www.sia.aviation-civile.gouv.fr/azbaEx/">the SIA AZBA application</a>, without the <code>LF</code> prefix. Double-check it: a mistyped zone is never found and would stay green.</span></dd>
+        </div>
+        <div>
+          <dt><span lang="fr">Changer un réglage</span><span lang="en">Change a setting</span></dt>
+          <dd><span lang="fr">Débranchez puis rebranchez le boîtier&nbsp;; dès que les LED s'allument en blanc, débranchez-le et rebranchez-le une seconde fois. Le violet revient pour cinq minutes. Pour ne changer que la zone ou le serveur, laissez le Wi-Fi vide.</span><span lang="en">Unplug then plug the device back in; as soon as the LEDs light up white, unplug and plug it back a second time. Purple comes back for five minutes. To change only the zone or the server, leave the Wi-Fi fields empty.</span></dd>
+        </div>
+        <div>
+          <dt><span lang="fr">Nouveau Wi-Fi</span><span lang="en">New Wi-Fi</span></dt>
+          <dd><span lang="fr">Si le réseau enregistré reste injoignable, le boîtier rouvre seul son réseau de réglage au bout de deux minutes environ, puis réessaie.</span><span lang="en">If the saved network stays unreachable, the device reopens its setup network by itself after about two minutes, then tries again.</span></dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <p><strong>AZBA Indicator</strong> · <span lang="fr">logiciel libre sous</span><span lang="en">free software under the</span> <a href="https://github.com/stephanfo/AZBA-Indicator/blob/main/LICENSE"><span lang="fr">licence MIT</span><span lang="en">MIT licence</span></a>, <span lang="fr">par</span><span lang="en">by</span> <a href="https://stephane.ratelet.fr/">Stéphane Ratelet</a>.</p>
+    <nav class="footer-nav" aria-label="Liens">
+      <a href="https://github.com/stephanfo/AZBA-Indicator">GitHub</a>
+      <a href="https://github.com/stephanfo/AZBA-Indicator#readme"><span lang="fr">Documentation technique</span><span lang="en">Technical documentation</span></a>
+      <a href="https://www.printables.com/model/1487021-azba-status-indicator-3d-printable-display-for-des">Printables</a>
+      <a href="https://github.com/stephanfo/AZBA-Indicator/issues"><span lang="fr">Signaler un problème</span><span lang="en">Report an issue</span></a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>

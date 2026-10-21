@@ -7,7 +7,14 @@ This project does not yet use formal version tags; entries are grouped by date.
 
 ## [Unreleased]
 
+### Removed
+- Compile-time secrets: `extra/generate_secrets.py`, `src/secrets.example.h` and
+  `src/secrets.h` are no longer used.
+- Static IP configuration: use a DHCP reservation on the router.
+
 ### Changed
+- While running, 3 failed WiFi reconnection cycles (15 minutes) now trigger a
+  reboot, so the boot path can reopen the portal.
 - **`php/azba.php` rewritten to use the official SIA JSON API.** The old version
   scraped the HTML of `/schedules` and searched for the text
   `"Liste des zones activées"`. The SIA replaced that page with a JavaScript
@@ -37,6 +44,23 @@ This project does not yet use formal version tags; entries are grouped by date.
   all failures and map them to their own response.
 
 ### Added
+- **Runtime configuration through a captive portal (WiFiManager).** WiFi network,
+  AZBA zone and backend URL are entered from a phone on first boot and stored in
+  flash (LittleFS `/config.json`); nothing is compiled in any more. The portal
+  reopens on a double restart (RESET pressed twice, or power cycled twice within
+  10 seconds) and by itself when the saved WiFi stays unreachable at boot (3 × 30 s),
+  for 5 minutes. New LED state: purple slow blinking = portal open.
+- Zone and URL rules in `lib/AzbaConfig` (upper-case, spaces and `LF` prefix
+  dropped, format check), with host unit tests (`pio test -e native`). They keep
+  the firmware's zone key identical to the backend's: a lower-case zone used to
+  miss the backend's upper-case key and show green forever.
+- HTTPS backends (certificate not verified) and HTTP redirects.
+- **Browser installation**: `site/` presentation page (French / English,
+  azba.ratelet.fr) with an ESP Web Tools install button; `site/build.sh` builds
+  the firmware and assembles the site; `.github/workflows/pages.yml` tests, builds
+  and deploys it to GitHub Pages. The backend is offered as `azba-serveur.zip`.
+- Firmware version (`<commit date>-<git describe>`) stamped by `extra/version.py`,
+  shown on the serial port, in the portal and on the page.
 - **Fail-safe data guards.** A false "inactive" is dangerous (it could imply an
   active restricted zone is clear). The backend now returns a non-200 — surfaced
   as the firmware's white ERROR LED — on any untrusted condition: rejected auth,

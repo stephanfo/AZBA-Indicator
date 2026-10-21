@@ -9,7 +9,7 @@
 .pio/build/
 .pio/libdeps/
 
-# Local secrets (do not commit)
+# Local secrets of the former compile-time configuration (do not commit)
 src/secrets.h
 
 # macOS
@@ -17,3 +17,7 @@ src/secrets.h
 
 # VSCode
 .vscode/
+
+# GitHub Pages site (built by site/build.sh)
+_site/
+site/node_modules/
