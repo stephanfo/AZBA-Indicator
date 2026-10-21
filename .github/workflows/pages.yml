@@ -83,7 +83,9 @@ jobs:
 
       # Fail-safe guards and time logic of the backend (PHP ships with the runner).
       - name: Backend tests
-        run: php tests/run.php
+        run: |
+          php --version
+          php tests/run.php
 
       # Builds the firmware, assembles _site/ and checks it; fails if anything is missing.
       - name: Assemble the site

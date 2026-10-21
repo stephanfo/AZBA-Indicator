@@ -106,7 +106,9 @@ function azba_parse_range(array $range, DateTime $now): array
     try {
         $start = new DateTime($range['startDate']);
         $end   = new DateTime($range['endDate']);
-    } catch (Exception $e) {
+    } catch (Throwable $e) {
+        // Throwable, not Exception: some PHP builds (seen on the GitHub Ubuntu
+        // runner) throw an Error on a malformed date string.
         throw new AzbaDataException('AZBA validity range has an unparsable date — API format may have changed');
     }
 
@@ -174,7 +176,7 @@ function azba_build_zones(array $apiZones): array
             try {
                 $start = new DateTime($slot['startTime']);
                 $end   = new DateTime($slot['endTime']);
-            } catch (Exception $e) {
+            } catch (Throwable $e) { // see azba_parse_range()
                 throw new AzbaDataException('AZBA timeSlot for "' . $zone['codeId'] . '" has unparsable times — API format may have changed');
             }
 

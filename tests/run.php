@@ -68,7 +68,7 @@ function assert_throws(callable $fn, string $name, string $expected = 'AzbaDataE
             $GLOBALS['__pass']++;
             return;
         }
-        fwrite(STDOUT, "  FAIL $name (threw " . get_class($e) . ", not $expected)\n");
+        fwrite(STDOUT, "  FAIL $name (threw " . get_class($e) . ": " . $e->getMessage() . ", not $expected)\n");
         $GLOBALS['__fail']++;
         return;
     }

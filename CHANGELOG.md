@@ -79,6 +79,9 @@ This project does not yet use formal version tags; entries are grouped by date.
   web app bundle if the SIA rotates them.
 
 ### Fixed
+- Malformed SIA dates are reported as `AzbaDataException` on every PHP build:
+  some (seen on the GitHub Ubuntu runner) throw an `Error`, which escaped the
+  `catch (Exception)` guards.
 - Indicator no longer fails permanently after the SIA AZBA page redesign.
 
 ## [2026-06-23] — Documentation & configuration
