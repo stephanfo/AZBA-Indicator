@@ -22,6 +22,24 @@
   <meta property="og:image:alt" content="Le boîtier AZBA Indicator allumé en vert, zone R149E.">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <!-- Fiche du projet pour les moteurs de recherche. L'auteur porte le même @id que sur son
+       site personnel : les moteurs relient ainsi ses projets à une seule personne. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "AZBA Indicator",
+    "description": "Indicateur AZBA imprimable en 3D : un voyant qui montre si la zone militaire est active, d'après les créneaux publiés par le SIA.",
+    "url": "https://azba.ratelet.fr/",
+    "sameAs": ["https://github.com/stephanfo/AZBA-Indicator", "https://www.printables.com/model/1487021-azba-status-indicator-3d-printable-display-for-des"],
+    "image": "https://azba.ratelet.fr/assets/img/og.jpg",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "ESP8266",
+    "isAccessibleForFree": true,
+    "license": "https://opensource.org/licenses/MIT",
+    "author": {"@type": "Person", "@id": "https://stephane.ratelet.fr/#me", "name": "Stéphane Ratelet", "url": "https://stephane.ratelet.fr/"}
+  }
+  </script>
   <link rel="preload" href="/assets/fonts/geist-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/geist-sans-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/style.css">
